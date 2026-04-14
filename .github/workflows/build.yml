@@ -34,10 +34,11 @@ jobs:
       
       - name: Train and save model
         run: |
-          python src/main.py
+          python src/main.py 
           
       - name: Run model tests
-        run: python model_tests/test_model.py
+        run: python model_test/test_model.py
+        
 
       - name: Upload model to GitHub Release
         uses: softprops/action-gh-release@v1
