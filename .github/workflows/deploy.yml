@@ -1,0 +1,29 @@
+name: Deploy Model
+
+on:
+  # Permite ejecutarlo a mano si lo necesitas
+  workflow_dispatch:
+  # Se ejecuta automáticamente justo cuando termine de crearse el modelo
+  workflow_run:
+    workflows: ["Build Model"]
+    types:
+      - completed
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    # Solo despliega si el Build anterior fue un éxito
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Deploy to Render
+        # Aquí inyectamos tu Secreto de forma segura
+        env:
+          RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
+        run: |
+          echo "Disparando despliegue en Render..."
+          # Usamos la variable inyectada
+          curl -X POST $RENDER_DEPLOY_HOOK
